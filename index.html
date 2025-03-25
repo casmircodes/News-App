@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News App</title>
+    <style>
+        /* General Page Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #007bff, #6610f2);
+            color: #333;
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Header */
+        h1 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        /* Search Bar */
+        #search-bar {
+            width: 97%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        #search-bar:focus {
+            outline: none;
+            border-color: #6610f2;
+            box-shadow: 0 0 8px rgba(102, 16, 242, 0.5);
+        }
+
+        /* News Container */
+        .news-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* News Item */
+        .news-item {
+            flex: 1 1 calc(33.333% - 10px);
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .news-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* News Image */
+        .news-item img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        /* News Title */
+        .news-item h3 {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #333;
+        }
+
+        /* News Description */
+        .news-item p {
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* Read More Button */
+        .news-item a {
+            display: inline-block;
+            text-decoration: none;
+            background: #007bff;
+            color: white;
+            text-align: center;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .news-item a:hover {
+            background: #6610f2;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .news-item {
+                flex: 1 1 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Latest News</h1>
+        <input type="text" id="search-bar" placeholder="Search news..." onkeyup="searchNews()">
+        <div class="news-container" id="news-container"></div>
+    </div>
+
+    <script>
+        const API_KEY = "f196e121bee34cb09597511299016747";
+        const API_URL = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}`;
+
+        async function fetchNews(query = "") {
+            let url = query 
+                ? `https://newsapi.org/v2/everything?q=${query}&apiKey=${API_KEY}`
+                : API_URL;
+
+            try {
+                let res = await fetch(url);
+                let data = await res.json();
+                displayNews(data.articles);
+            } catch (error) {
+                console.error("Error fetching news:", error);
+            }
+        }
+
+        function displayNews(articles) {
+            const newsContainer = document.getElementById("news-container");
+            newsContainer.innerHTML = "";
+
+            if (articles.length === 0) {
+                newsContainer.innerHTML = "<p>No news found.</p>";
+                return;
+            }
+
+            articles.forEach(article => {
+                let newsItem = document.createElement("div");
+                newsItem.classList.add("news-item");
+                newsItem.innerHTML = `
+                    <img src="${article.urlToImage || 'https://via.placeholder.com/150'}" alt="News Image">
+                    <h3>${article.title}</h3>
+                    <p>${article.description || "No description available."}</p>
+                    <a href="${article.url}" target="_blank">Read More</a>
+                `;
+                newsContainer.appendChild(newsItem);
+            });
+        }
+
+        function searchNews() {
+            let query = document.getElementById("search-bar").value;
+            fetchNews(query);
+        }
+
+        window.onload = () => fetchNews();
+    </script>
+
+</body>
+  </html>
