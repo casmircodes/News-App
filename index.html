@@ -138,6 +138,10 @@
 
             try {
                 let res = await fetch(url);
+                if (!res.ok) {
+                           
+                            throw new Error(`HTTP error! Status: ${response.status}, Text: ${response.statusText}`);
+                        }
                 let data = await res.json();
                 displayNews(data.articles);
             } catch (error) {
